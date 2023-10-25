@@ -1,6 +1,6 @@
 ### Database Description
 
-**1. User**
+**1. User (Strong Entity)**
 - **Attributes:** `user_id (Primary Key)`, `name`, `email`, `password`, `date_registered`, `head_shot`
 
 **Relationships:**
@@ -12,7 +12,7 @@
 - Can join a `Group`. (Many to many)
 - Can have one `Headshot (Image)`. (One to One)
 
-**2. Post**
+**2. Post (Weak)**
 
 - **Attributes:**  `date_posted`, `user_id (Foreign Key referencing Users)`, `group_id (Foreign Key referencing Groups)`
 
@@ -48,13 +48,13 @@
 - Associated with a `Post`.
 
 
-**7. Workouts**
+**7. Workouts (Strong)**
 - **Attributes:** `workout_id (Primary Key)`, `exercise_name`, `sets`, `reps`, `date_recorded`, `user_id (Foreign Key referencing Users)`
 
 **Relationships:**
 - Belongs to a `User`.
 
-**8. Group**
+**8. Group (Strong)**
 - **Attributes:** `group_id (Primary Key)`, `group_name`, `group_description`
 
 **Relationships:**
@@ -63,7 +63,7 @@
 ---- 
 Logical 
 
-9. Group_users
+9. Group_users 
 - Table to deal with many to many 
 
 - **Attributes:** `user_id(Foreign Key referencing Users)`, `group_id(Foreign Key referencing group)`, 
