@@ -1,6 +1,6 @@
 ### Database Description
 
-**1. User (Strong Entity)**
+**1. User (Strong)**
 - **Attributes:** `user_id (Primary Key)`, `name`, `email`, `password`, `date_registered`, `head_shot`
 
 **Relationships:**
