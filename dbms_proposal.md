@@ -60,7 +60,7 @@
 **Relationships:**
 - Has one to many `Users`
 - Can access `workouts` made by users
-- 'Many to Many'
+- (Many to Many)
   
 ---- 
 Logical 
