@@ -1,6 +1,4 @@
-Certainly, let's incorporate the feature where users can check on each other's workout progress within the same group into the database description:
 
----
 
 The database is designed to power a dynamic social fitness platform, offering users the ability to share their fitness journeys, engage with fellow users, and meticulously track their workouts. Each user is assigned a unique ID and can furnish their profile with personal details such as name, email, and registration date. Furthermore, users have the option to join specific interest-based groups, whether it's roommates, family, or workout buddies, with each group defined by its distinct name and description.
 
