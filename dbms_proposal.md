@@ -58,7 +58,9 @@
 - **Attributes:** `group_id (Primary Key)`, `group_name`, `group_description`
 
 **Relationships:**
-- Has one to many `Users`.
+- Has one to many `Users`
+- Can access `workouts` made by users
+- 'Many to Many'
   
 ---- 
 Logical 
