@@ -1,7 +1,7 @@
 ### Database Description
 
 **1. User (Strong)**
-- **Attributes:** `user_id (Primary Key)`, `name`, `email`, `password`, `date_registered`, `head_shot`
+- **Attributes:** `user_id (Primary Key)`, `name`, `email`, `password`, `date_registered`.
 
 - constraint:
     - `email` is unique, not null 
@@ -9,16 +9,16 @@
 
 **Relationships:**
 - Can create a `Post`. (One to many)
-- Can create a `Comment` on a post. (One to many)
+- Can writes a `Comment` on a post. (One to many)
 - Can `Like` a post. (One to many)
-- Can create/update/edit their `Workouts`. (One to many)
-- has a `Group`. (one to many)
+- Can plans their `Workouts`. (One to many)
+- Joins a `Group`. (one to many)
 - Can have one `Headshot (Image)`. (One to One)
 ---
 
 **2. Post (Weak)**
 
-- **Attributes:**  `caption`, `date_posted`, `user_id (Foreign Key referencing Users)`, `group_id (Foreign Key referencing Groups)`
+- **Attributes:**  `caption`, `date_posted`, `images`.
 
 - Constraint:
     - ppk : `date_posted`, `user_id (Foreign Key referencing Users)`, `group_id (Foreign Key referencing Groups)`
@@ -28,16 +28,13 @@
 - Belongs to a `User`. (Many to one)
 - Group has many post. 
 (Many to Many)
-- Can have zero or many `Images`.
-(many to many)
-- Have text 
 - Can be `Liked` by users.
 (many to many)
 - Can be commented by the users. (many to many)
 ---
 
 **3. comment (Weak)**
-- **Attributes:**  `text`, `date_commented`, `user_id (Foreign Key referencing Users ) `,  `date_posted, user_id , group_id (reference Post )`
+- **Attributes:**  `text`, `date_commented`.
 
 - Constraint: 
     - ppk (`user_id` + `date_commented` + `date_posted, user_id , group_id (post ppk)` )
@@ -48,7 +45,7 @@
 ---
 
 **5. Like (Weak)**
-- **Attributes:** `date_liked`, `date_posted + user_id + group_id (Foreign Key referencing Post's ppk)`, `user_id (Foreign Key referencing Users ) `
+- **Attributes:** `date_liked`.
 
 - constrint:
     - ppk (`user_id` + `date_liked` + `date_posted, user_id , group_id (post ppk)` )
@@ -58,19 +55,9 @@
 
 --- 
 
-**4. Image (Weak)**
-- **Attributes:** `url`, `date_uploaded`, `date_posted + user_id + group_id (Foreign Key referencing Post)`
-
-- Constraint:
-    - ppk (`date_posted, user_id , group_id (post ppk)` + `date_uploaded`)
-
-**Relationships:**
-- Can be associated with a `Post`.
-
----
 
 **4.1 headshot (Weak)**
-- **Attributes:** `url`, `date_uploaded`, `user_id (Foreign Key referencing Users)`
+- **Attributes:** `url`, `date_uploaded`
 
 - Constraint:
     - ppk (`user_id` + `date_uploaded`)
@@ -82,7 +69,7 @@
 --- 
 
 **7. Workouts (Strong)**
-- **Attributes:** `workout_id (Primary Key)`, `exercise_name`, `sets`, `reps`, `date_recorded`, `user_id (Foreign Key referencing Users)`
+- **Attributes:** `workout_id (Primary Key)`, `exercise_name`, `sets`, `reps`, `date_recorded`.
 
 **Relationships:**
 - Belongs to a `User`.
@@ -96,6 +83,9 @@
 - Has one to many `Users`
 - Has zero to many `Posts`
 - Has every member workout progress (many to many)
+
+
+
 ---- 
 Logical 
 
