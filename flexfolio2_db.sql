@@ -104,6 +104,8 @@ create table user_group (
 		on update cascade on delete cascade 
 );
 
+-- user_likes_post is the relationship attribute 'date_liked' for likes
+
 drop table if exists user_likes_post;
 create table user_likes_post (
 	date_liked datetime,
