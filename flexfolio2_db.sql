@@ -110,10 +110,13 @@ drop table if exists user_likes_post;
 create table user_likes_post (
 	date_liked datetime,
     user_email_fk varchar(64),
-    group_name_fk varchar(64),
+    group_name_ppk3 varchar(64),
+    user_email_ppk3 varchar(64),
+    date_posted_ppk3 datetime,
+    primary key (user_email_ppk3, date_posted_ppk3, group_name_ppk3),
     foreign key (user_email_fk) references app_user (user_email)
 		on update cascade on delete cascade,
-	foreign key (group_name_fk) references workout_group (group_name)
+	foreign key (user_email_ppk3, date_posted_ppk3, group_name_ppk3) references post (user_email_fk, date_posted, group_name_fk)
 		on update cascade on delete cascade
 );
 
