@@ -1,4 +1,4 @@
-use flexfolio;
+USE flexfolio;
 
 -- Procedure to create a new user in the app_user table
 DELIMITER //
