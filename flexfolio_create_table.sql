@@ -1,8 +1,9 @@
-drop database if exists Flexfolio;
-create database FlexFolio;
-use FlexFolio;
+DROP DATABASE IF EXISTS Flexfolio;
+CREATE DATABASE FlexFolio;
+USE FlexFolio;
 
-drop table if exists app_user;
+-- Create a table storing the user's information
+DROP TABLE IF EXISTS app_user;
 CREATE TABLE app_user (
     user_email VARCHAR(64) PRIMARY KEY,
     user_name VARCHAR(64) NOT NULL,
@@ -10,7 +11,8 @@ CREATE TABLE app_user (
     date_registered DATETIME
 );
 
-drop table if exists workout_group;
+-- Create a table storing the information needed when managing groups
+DROP TABLE IF EXISTS workout_group;
 CREATE TABLE workout_group (
     group_name VARCHAR(64) PRIMARY KEY,
     group_passcode INT UNIQUE,
@@ -19,7 +21,8 @@ CREATE TABLE workout_group (
     date_created DATETIME
 );
 
-drop table if exists post;
+-- Create a table for handling posts 
+DROP TABLE IF EXISTS post;
 CREATE TABLE post (
     post_id INT PRIMARY KEY,
     caption TINYTEXT,
@@ -27,6 +30,7 @@ CREATE TABLE post (
     images_url VARCHAR(255),
     user_email VARCHAR(64),
     group_name VARCHAR(64),
+    -- Declare foreign keys referencing app_users and workout_group 
     FOREIGN KEY (user_email)
         REFERENCES app_user (user_email)
         ON UPDATE CASCADE ON DELETE CASCADE,
@@ -35,15 +39,16 @@ CREATE TABLE post (
         ON UPDATE CASCADE ON DELETE CASCADE
 );
 
-
-
-drop table if exists user_comment;
+-- Create a table for handling comments made by users
+-- Each comment is associated with a user who made the comment and the post that was commented on
+DROP TABLE IF EXISTS user_comment;
 CREATE TABLE user_comment (
     comment_id INT PRIMARY KEY,
     post_id INT,
     user_email VARCHAR(64),
     comment_text TEXT,
     date_commented DATETIME,
+    -- Delcare foreign keys referencing the app_user and post tables
     FOREIGN KEY (user_email)
         REFERENCES app_user (user_email)
         ON UPDATE CASCADE ON DELETE CASCADE,
@@ -52,20 +57,21 @@ CREATE TABLE user_comment (
         ON UPDATE CASCADE ON DELETE CASCADE
 );
 
-
-drop table if exists headshot;
+-- Create a table handling headshots uploaded by users onto their profiles 
+DROP TABLE IF EXISTS headshot;
 CREATE TABLE headshot (
     head_shot_id INT PRIMARY KEY,
     user_email VARCHAR(64),
     image_url VARCHAR(255),
     date_uploaded DATETIME,
+    -- Declare foreign key referencing app_user 
     FOREIGN KEY (user_email)
         REFERENCES app_user (user_email)
         ON UPDATE CASCADE ON DELETE CASCADE
 );
 
-
-drop table if exists workouts;
+-- Create a table handling information recorded for each workout created by users
+DROP TABLE IF EXISTS workouts;
 CREATE TABLE workouts (
     workout_id INT PRIMARY KEY,
     exercise_name VARCHAR(64),
@@ -73,18 +79,20 @@ CREATE TABLE workouts (
     reps INT,
     date_recorded DATETIME,
     user_email VARCHAR(64),
+    -- Declare foreign key referencing app_user
     FOREIGN KEY (user_email)
         REFERENCES app_user (user_email)
         ON UPDATE CASCADE ON DELETE CASCADE
 );
 
-
-
-drop table if exists user_group;
+-- Create a table handling the many to many multiplicity between app_users and workout_group
+DROP TABLE IF EXISTS user_group;
 CREATE TABLE user_group (
+    -- Create partial primary key to reference the app_user and workout_group tables
     user_email VARCHAR(64),
     group_name VARCHAR(64),
     PRIMARY KEY (user_email , group_name),
+     -- Declare foreign keys referencing app_user and workout_group 
     FOREIGN KEY (user_email)
         REFERENCES app_user (user_email)
         ON UPDATE CASCADE ON DELETE CASCADE,
@@ -93,13 +101,15 @@ CREATE TABLE user_group (
         ON UPDATE CASCADE ON DELETE CASCADE
 );
 
-
-drop table if exists user_likes_post;
+-- Create a table handling the attributes on the Likes relationship 
+DROP TABLE IF EXISTS user_likes_post;
 CREATE TABLE user_likes_post (
     date_liked DATETIME,
+    -- Create partial primary key to reference the app_user and post tables
     user_email VARCHAR(64),
     post_id INT,
     PRIMARY KEY (user_email , post_id),
+    -- Declare foreign keys referencing the app_user and post tables
     FOREIGN KEY (user_email)
         REFERENCES app_user (user_email)
         ON UPDATE CASCADE ON DELETE CASCADE,
