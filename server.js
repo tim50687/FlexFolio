@@ -1,7 +1,5 @@
 const express = require("express");
 const mysql = require("mysql2"); // mysql2 is a promise-based version of mysql
-const app = express(); // create express app
-const PORT = 3000; // port where server is running
 
 // Set up environment variables
 const dotenv = require("dotenv");
@@ -28,6 +26,15 @@ promisePool
   .catch((err) => {
     console.error("Unable to connect to the database:", err);
   });
+
+const app = express(); // create express app
+const PORT = 3000; // port where server is running
+
+app.use(express.json()); // Middleware for parsing JSON bodies
+
+// Use the user routes and pass the promisePool
+const userRoutes = require("./routes/userRoutes"); // Import user routes
+app.use("/api/users", userRoutes(promisePool));
 
 app.get("/", (req, res) => {
   res.send("Hello, Flexfolio");

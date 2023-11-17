@@ -3,26 +3,16 @@
 const bcrypt = require("bcrypt");
 const mysql = require("mysql2");
 
-// Set up connection pool
-const pool = mysql.createPool({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USERNAME,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_DATABASE,
-});
-
-// Promisify for Node.js async/await.
-const promisePool = pool.promise();
-
-const register = async (req, res) => {
+const registerUser = (promisePool) => async (req, res) => {
   try {
     const { email, password, name } = req.body;
+    console.log(email, password, name); // Add this line for debugging
 
     // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // Call the stored procedure
-    const [rows] = await promisePool.execute("CALL register(?, ?, ?)", [
+    const [rows] = await promisePool.execute("CALL create_user(?, ?, ?)", [
       email,
       hashedPassword,
       name,
@@ -38,4 +28,4 @@ const register = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
-module.exports = { register };
+module.exports = { registerUser };
