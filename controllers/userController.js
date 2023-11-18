@@ -91,4 +91,24 @@ const deleteUser = (promisePool) => async (req, res) => {
   }
 };
 
-module.exports = { registerUser, loginUser, deleteUser };
+// Change user's name
+
+const changeName = (promisePool) => async (req, res) => {
+  try {
+    const { user_email } = req.user;
+    const { name } = req.body;
+
+    // update the user's name
+    const [rows] = await promisePool.execute(
+      "UPDATE app_user SET user_name = (?) WHERE user_email = (?)",
+      [name, user_email]
+    );
+
+    res.status(200).json({ message: "Name changed successfully" });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+module.exports = { registerUser, loginUser, deleteUser, changeName };

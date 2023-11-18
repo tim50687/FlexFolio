@@ -18,5 +18,12 @@ module.exports = (promisePool) => {
     userController.deleteUser(promisePool)
   );
 
+  // Change user's name
+  router.put(
+    "/change-name",
+    authenticateToken,
+    userController.changeName(promisePool)
+  );
+
   return router;
 };
