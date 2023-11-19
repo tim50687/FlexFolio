@@ -143,13 +143,13 @@ const handleHeadshot = (promisePool) => async (req, res) => {
     } else {
       // Insert new headshot
       await promisePool.execute(
-        "INSERT INTO headshot (user_email, image_url, date_uploaded) VALUES (?, ?, NOW())",
-        [user_email, headshotUrl]
+        "INSERT INTO headshot (image_url, user_email, date_uploaded) VALUES (?, ?, NOW())",
+        [headshotUrl, user_email]
       );
     }
 
     // delete the file from uploads folder, since it is already uploaded to s3
-    await unlinkFile(headshot.path);
+    await unlinkFile(file.path);
 
     res
       .status(200)
