@@ -58,7 +58,7 @@ CREATE TABLE user_comment (
 );
 
 
-drop table if exists headshot;
+DROP TABLE IF EXISTS headshot;
 CREATE TABLE headshot (
     image_url VARCHAR(255) PRIMARY KEY,
     user_email VARCHAR(64),
