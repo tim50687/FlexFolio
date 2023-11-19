@@ -1,4 +1,6 @@
 const express = require("express");
+const multer = require("multer");
+const upload = multer({ dest: "uploads/" });
 const userController = require("../controllers/userController");
 const authenticateToken = require("../middleware/authenticateToken");
 
@@ -23,6 +25,14 @@ module.exports = (promisePool) => {
     "/change-name",
     authenticateToken,
     userController.changeName(promisePool)
+  );
+
+  // Update user's profile picture
+  router.post(
+    "/update-profile-picture",
+    authenticateToken,
+    upload.single("headshot"),
+    userController.handleHeadshot(promisePool)
   );
 
   return router;

@@ -4,6 +4,15 @@ require("dotenv").config();
 const bcrypt = require("bcrypt");
 const mysql = require("mysql2");
 const jwt = require("jsonwebtoken");
+const { upLoadFile, getFileStream } = require("../s3"); // for user profile picture update
+// file system
+const fs = require("fs");
+const utils = require("util");
+const unlinkFile = utils.promisify(fs.unlink);
+
+// image upload
+const multer = require("multer");
+const upload = multer({ dest: "uploads/" });
 
 // User registration
 const registerUser = (promisePool) => async (req, res) => {
@@ -111,4 +120,53 @@ const changeName = (promisePool) => async (req, res) => {
   }
 };
 
-module.exports = { registerUser, loginUser, deleteUser, changeName };
+// Set up || Update user's profile picture
+const handleHeadshot = (promisePool) => async (req, res) => {
+  try {
+    const { user_email } = req.user.user_email;
+    // return by multer middleware
+    const { headshot } = req.file; // filename and path will be used by s3
+
+    // upload the file to s3
+    const result = await upLoadFile(headshot); // need the Key return by s3 to get the image
+    const headshotUrl = `/images/${result.Key}`;
+
+    // Check if the user already has a headshot
+    const [rows] = await promisePool.execute(
+      "SELECT * FROM headshot WHERE user_email = ?",
+      [user_email]
+    );
+
+    if (rows.length > 0) {
+      // Update existing headshot
+      await promisePool.execute(
+        "UPDATE headshot SET image_url = ?, date_uploaded = NOW() WHERE user_email = ?",
+        [headshotUrl, user_email]
+      );
+    } else {
+      // Insert new headshot
+      await promisePool.execute(
+        "INSERT INTO headshot (user_email, image_url, date_uploaded) VALUES (?, ?, NOW())",
+        [user_email, headshotUrl]
+      );
+    }
+
+    // delete the file from uploads folder
+    await unlinkFile(headshot.path);
+
+    res
+      .status(200)
+      .json({ message: "Profile picture updated successfully", headshotUrl });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+module.exports = {
+  registerUser,
+  loginUser,
+  deleteUser,
+  changeName,
+  handleHeadshot,
+};

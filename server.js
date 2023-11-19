@@ -1,15 +1,6 @@
 const express = require("express");
 const mysql = require("mysql2"); // mysql2 is a promise-based version of mysql
 
-// file system
-const fs = require("fs");
-const utils = require("util");
-const unlinkFile = utils.promisify(fs.unlink);
-
-// Test image upload
-const multer = require("multer");
-const upload = multer({ dest: "uploads/" });
-
 // Set up environment variables
 const dotenv = require("dotenv");
 dotenv.config();
@@ -50,22 +41,16 @@ app.get("/", (req, res) => {
 });
 
 // For testing image
-const { upLoadFile, getFileStream } = require("./s3");
-app.get("/images/:key", (req, res) => {
-  console.log(req.params);
-  const key = req.params.key;
-  const readStream = getFileStream(key);
-  readStream.pipe(res);
-});
-
-app.post("/upload", upload.single("avatar"), async (req, res) => {
-  console.log(req.body);
-  console.log(req.file);
-  const result = await upLoadFile(req.file);
-  await unlinkFile(req.file.path); // Delete the file from uploads folder
-  console.log(result);
-  res.send({ imagePath: `/images/${result.Key}}` });
-});
+// Test image upload
+// const multer = require("multer");
+// const upload = multer({ dest: "uploads/" });
+// const { upLoadFile, getFileStream } = require("./s3");
+// app.get("/images/:key", (req, res) => {
+//   console.log(req.params);
+//   const key = req.params.key;
+//   const readStream = getFileStream(key);
+//   readStream.pipe(res);
+// });
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
