@@ -118,15 +118,15 @@ const changeName = (promisePool) => async (req, res) => {
 // Set up || Update user's profile picture
 const handleHeadshot = (promisePool) => async (req, res) => {
   try {
-    const { user_email } = req.user.user_email;
-
+    const { user_email } = req.user;
+    console.log(req.user);
     // return by multer middleware
-    const { headshot } = req.file; // filename and path will be used by s3
+    const file = req.file; // filename and path will be used by s3
 
     // upload the file to s3
-    const result = await upLoadFile(headshot); // need the Key return by s3 to get the image
+    const result = await upLoadFile(file); // need the Key return by s3 to get the image
+    console.log(result);
     const headshotUrl = `/images/${result.Key}`;
-
     // Update database
     // Check if the user already has a headshot
     const [rows] = await promisePool.execute(
