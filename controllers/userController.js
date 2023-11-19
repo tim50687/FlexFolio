@@ -10,10 +10,6 @@ const fs = require("fs");
 const utils = require("util");
 const unlinkFile = utils.promisify(fs.unlink);
 
-// image upload
-const multer = require("multer");
-const upload = multer({ dest: "uploads/" });
-
 // User registration
 const registerUser = (promisePool) => async (req, res) => {
   try {
@@ -101,7 +97,6 @@ const deleteUser = (promisePool) => async (req, res) => {
 };
 
 // Change user's name
-
 const changeName = (promisePool) => async (req, res) => {
   try {
     const { user_email } = req.user;
@@ -124,6 +119,7 @@ const changeName = (promisePool) => async (req, res) => {
 const handleHeadshot = (promisePool) => async (req, res) => {
   try {
     const { user_email } = req.user.user_email;
+
     // return by multer middleware
     const { headshot } = req.file; // filename and path will be used by s3
 
@@ -131,6 +127,7 @@ const handleHeadshot = (promisePool) => async (req, res) => {
     const result = await upLoadFile(headshot); // need the Key return by s3 to get the image
     const headshotUrl = `/images/${result.Key}`;
 
+    // Update database
     // Check if the user already has a headshot
     const [rows] = await promisePool.execute(
       "SELECT * FROM headshot WHERE user_email = ?",
@@ -151,7 +148,7 @@ const handleHeadshot = (promisePool) => async (req, res) => {
       );
     }
 
-    // delete the file from uploads folder
+    // delete the file from uploads folder, since it is already uploaded to s3
     await unlinkFile(headshot.path);
 
     res

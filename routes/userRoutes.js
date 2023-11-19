@@ -1,6 +1,8 @@
 const express = require("express");
+// image upload
 const multer = require("multer");
 const upload = multer({ dest: "uploads/" });
+
 const userController = require("../controllers/userController");
 const authenticateToken = require("../middleware/authenticateToken");
 
