@@ -4,6 +4,11 @@ require("dotenv").config();
 const bcrypt = require("bcrypt");
 const mysql = require("mysql2");
 const jwt = require("jsonwebtoken");
+const { upLoadFile, getFileStream } = require("../s3"); // for user profile picture update
+// file system
+const fs = require("fs");
+const utils = require("util");
+const unlinkFile = utils.promisify(fs.unlink);
 
 // User registration
 const registerUser = (promisePool) => async (req, res) => {
@@ -91,4 +96,74 @@ const deleteUser = (promisePool) => async (req, res) => {
   }
 };
 
-module.exports = { registerUser, loginUser, deleteUser };
+// Change user's name
+const changeName = (promisePool) => async (req, res) => {
+  try {
+    const { user_email } = req.user;
+    const { name } = req.body;
+
+    // update the user's name
+    const [rows] = await promisePool.execute(
+      "UPDATE app_user SET user_name = (?) WHERE user_email = (?)",
+      [name, user_email]
+    );
+
+    res.status(200).json({ message: "Name changed successfully" });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+// Set up || Update user's profile picture
+const handleHeadshot = (promisePool) => async (req, res) => {
+  try {
+    const { user_email } = req.user;
+    console.log(req.user);
+    // return by multer middleware
+    const file = req.file; // filename and path will be used by s3
+
+    // upload the file to s3
+    const result = await upLoadFile(file); // need the Key return by s3 to get the image
+    console.log(result);
+    const headshotUrl = `/images/${result.Key}`;
+    // Update database
+    // Check if the user already has a headshot
+    const [rows] = await promisePool.execute(
+      "SELECT * FROM headshot WHERE user_email = ?",
+      [user_email]
+    );
+
+    if (rows.length > 0) {
+      // Update existing headshot
+      await promisePool.execute(
+        "UPDATE headshot SET image_url = ?, date_uploaded = NOW() WHERE user_email = ?",
+        [headshotUrl, user_email]
+      );
+    } else {
+      // Insert new headshot
+      await promisePool.execute(
+        "INSERT INTO headshot (image_url, user_email, date_uploaded) VALUES (?, ?, NOW())",
+        [headshotUrl, user_email]
+      );
+    }
+
+    // delete the file from uploads folder, since it is already uploaded to s3
+    await unlinkFile(file.path);
+
+    res
+      .status(200)
+      .json({ message: "Profile picture updated successfully", headshotUrl });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+module.exports = {
+  registerUser,
+  loginUser,
+  deleteUser,
+  changeName,
+  handleHeadshot,
+};

@@ -40,6 +40,18 @@ app.get("/", (req, res) => {
   res.send("Hello, Flexfolio");
 });
 
+// For testing image
+// Test image upload
+// const multer = require("multer");
+// const upload = multer({ dest: "uploads/" });
+// const { upLoadFile, getFileStream } = require("./s3");
+// app.get("/images/:key", (req, res) => {
+//   console.log(req.params);
+//   const key = req.params.key;
+//   const readStream = getFileStream(key);
+//   readStream.pipe(res);
+// });
+
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });

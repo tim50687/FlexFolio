@@ -57,12 +57,11 @@ CREATE TABLE user_comment (
         ON UPDATE CASCADE ON DELETE CASCADE
 );
 
--- Create a table handling headshots uploaded by users onto their profiles 
-DROP TABLE IF EXISTS headshot;
+
+drop table if exists headshot;
 CREATE TABLE headshot (
-    head_shot_id INT PRIMARY KEY,
+    image_url VARCHAR(255) PRIMARY KEY,
     user_email VARCHAR(64),
-    image_url VARCHAR(255),
     date_uploaded DATETIME,
     -- Declare foreign key referencing app_user 
     FOREIGN KEY (user_email)

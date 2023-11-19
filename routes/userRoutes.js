@@ -1,4 +1,8 @@
 const express = require("express");
+// image upload
+const multer = require("multer");
+const upload = multer({ dest: "uploads/" });
+
 const userController = require("../controllers/userController");
 const authenticateToken = require("../middleware/authenticateToken");
 
@@ -16,6 +20,21 @@ module.exports = (promisePool) => {
     "/delete-account",
     authenticateToken,
     userController.deleteUser(promisePool)
+  );
+
+  // Change user's name
+  router.put(
+    "/change-name",
+    authenticateToken,
+    userController.changeName(promisePool)
+  );
+
+  // Update user's profile picture
+  router.post(
+    "/update-profile-picture",
+    authenticateToken,
+    upload.single("headshot"),
+    userController.handleHeadshot(promisePool)
   );
 
   return router;
