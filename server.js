@@ -36,6 +36,10 @@ app.use(express.json()); // Middleware for parsing JSON bodies
 const userRoutes = require("./routes/userRoutes"); // Import user routes
 app.use("/api/users", userRoutes(promisePool));
 
+// Use the group routes and pass the promisePool
+const groupRoutes = require("./routes/groupRoutes"); // Import group routes
+app.use("/api/groups", groupRoutes(promisePool));
+
 app.get("/", (req, res) => {
   res.send("Hello, Flexfolio");
 });
