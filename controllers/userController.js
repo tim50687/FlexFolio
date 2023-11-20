@@ -158,17 +158,26 @@ const handleHeadshot = (promisePool) => async (req, res) => {
     console.log(err);
     res.status(500).json({ message: "Internal server error" });
   }
+};
+// Log the workout
+const logWorkout = (promisePool) => async (req, res) => {
+  try {
+    const { exerciseName, sets, reps, weight } = req.body;
+    const { user_email } = req.user;
 
-  // Log the workout
-  const logWorkout = (promisePool) => async (req, res) => {
-    try {
-      const {exercideName, sets, }
-    }
-    catch (err) {
-      console.error(err);
-      res.status(500).json({ message: "Internal server error" });
-    }
-  
+    // Call the stored procedure with the new weight parameter
+    await promisePool.execute("CALL log_workout(?, ?, ?, ?, ?)", [
+      user_email,
+      exerciseName,
+      sets,
+      reps,
+      weight, // New weight parameter
+    ]);
+    res.status(201).json({ message: "Workout logged successfully" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Internal server error" });
+  }
 };
 
 module.exports = {
@@ -177,4 +186,5 @@ module.exports = {
   deleteUser,
   changeName,
   handleHeadshot,
+  logWorkout,
 };

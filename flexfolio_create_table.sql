@@ -72,7 +72,7 @@ CREATE TABLE headshot (
 -- Create a table handling information recorded for each workout created by users
 DROP TABLE IF EXISTS workouts;
 CREATE TABLE workouts (
-    workout_id INT PRIMARY KEY,
+    workout_id INT PRIMARY KEY AUTO_INCREMENT,
     exercise_name VARCHAR(64),
     sets INT,
     reps INT,
