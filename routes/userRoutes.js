@@ -37,5 +37,12 @@ module.exports = (promisePool) => {
     userController.handleHeadshot(promisePool)
   );
 
+  // Log the workout
+  router.post(
+    "/log-workout",
+    authenticateToken,
+    userController.logWorkout(promisePool)
+  );
+
   return router;
 };

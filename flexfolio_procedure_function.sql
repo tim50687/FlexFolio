@@ -99,13 +99,20 @@ DELIMITER ;
 
 -- Procedure to log a workout session
 DELIMITER //
-CREATE PROCEDURE log_workout (IN user_id_param VARCHAR(64), IN exercise_name_param VARCHAR(64), IN sets_param INT, IN reps_param INT)
+CREATE PROCEDURE log_workout (
+    IN user_id_param VARCHAR(64), 
+    IN exercise_name_param VARCHAR(64), 
+    IN sets_param INT, 
+    IN reps_param INT,
+    IN weight_param DECIMAL(5, 2)  -- New weight parameter
+)
 BEGIN
-    -- Log a workout session for the user
-    INSERT INTO workouts(exercise_name, sets, reps, date_recorded, user_email) 
-    VALUES (exercise_name_param, sets_param, reps_param, NOW(), user_id_param);
+    -- Log a workout session for the user, including the weight
+    INSERT INTO workouts(exercise_name, sets, reps, weight, date_recorded, user_email) 
+    VALUES (exercise_name_param, sets_param, reps_param, weight_param, NOW(), user_id_param);
 END //
 DELIMITER ;
+
 
 
 -- Procedure to update a user's profile

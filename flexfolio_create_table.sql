@@ -76,6 +76,7 @@ CREATE TABLE workouts (
     exercise_name VARCHAR(64),
     sets INT,
     reps INT,
+    weight DECIMAL(5, 2),
     date_recorded DATETIME,
     user_email VARCHAR(64),
     -- Declare foreign key referencing app_user

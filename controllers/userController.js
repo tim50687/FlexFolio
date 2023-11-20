@@ -158,6 +158,17 @@ const handleHeadshot = (promisePool) => async (req, res) => {
     console.log(err);
     res.status(500).json({ message: "Internal server error" });
   }
+
+  // Log the workout
+  const logWorkout = (promisePool) => async (req, res) => {
+    try {
+      const {exercideName, sets, }
+    }
+    catch (err) {
+      console.error(err);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  
 };
 
 module.exports = {
