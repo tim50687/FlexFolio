@@ -24,5 +24,15 @@ module.exports = (promisePool) => {
     postController.deletePost(promisePool)
   );
 
+  // Comment on a post
+  router.post(
+    "/comment",
+    authenticateToken,
+    postController.commentOnPost(promisePool)
+  );
+
+  // Like a post
+  router.post("/like", authenticateToken, postController.likePost(promisePool));
+
   return router;
 };

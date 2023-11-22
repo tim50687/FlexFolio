@@ -72,4 +72,57 @@ const deletePost = (promisePool) => async (req, res) => {
   }
 };
 
-module.exports = { createPost, deletePost };
+// Make a comment on a post
+const commentOnPost = (promisePool) => async (req, res) => {
+  try {
+    const { postId, comment } = req.body;
+    const { user_email } = req.user;
+
+    // Call the stored procedure
+    await promisePool.execute("CALL comment_on_post(?, ?, ?)", [
+      parseInt(postId, 10),
+      user_email,
+      comment,
+    ]);
+
+    res.status(201).json({ message: "Commented on post successfully" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+// Like a post
+const likePost = (promisePool) => async (req, res) => {
+  try {
+    const { postId } = req.body;
+    const { user_email } = req.user;
+
+    // First, check if the user already liked the post
+    const [likes] = await promisePool.execute(
+      "SELECT 1 FROM user_likes_post WHERE post_id = ? AND user_email = ?",
+      [postId, user_email]
+    );
+
+    if (likes.length > 0) {
+      // User already liked the post, so remove the like
+      await promisePool.execute(
+        "DELETE FROM user_likes_post WHERE post_id = ? AND user_email = ?",
+        [postId, user_email]
+      );
+      res.status(200).json({ message: "Like removed" });
+    } else {
+      // User hasn't liked the post yet, so add a like
+      await promisePool.execute("CALL like_post(?, ?)", [
+        parseInt(postId, 10), // Convert postId to an integer
+        user_email,
+      ]);
+      res.status(201).json({ message: "Post liked successfully" });
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+module.exports = { createPost, deletePost, commentOnPost, likePost };
