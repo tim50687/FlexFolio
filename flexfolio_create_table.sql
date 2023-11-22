@@ -43,7 +43,7 @@ CREATE TABLE post (
 -- Each comment is associated with a user who made the comment and the post that was commented on
 DROP TABLE IF EXISTS user_comment;
 CREATE TABLE user_comment (
-    comment_id INT PRIMARY KEY,
+    comment_id INT PRIMARY KEY AUTO_INCREMENT,
     post_id INT,
     user_email VARCHAR(64),
     comment_text TEXT,
