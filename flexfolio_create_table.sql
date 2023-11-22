@@ -24,7 +24,7 @@ CREATE TABLE workout_group (
 -- Create a table for handling posts 
 DROP TABLE IF EXISTS post;
 CREATE TABLE post (
-    post_id INT PRIMARY KEY,
+    post_id INT PRIMARY KEY AUTO_INCREMENT,
     caption TINYTEXT,
     date_posted DATETIME,
     images_url VARCHAR(255),

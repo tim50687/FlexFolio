@@ -40,6 +40,10 @@ app.use("/api/users", userRoutes(promisePool));
 const groupRoutes = require("./routes/groupRoutes"); // Import group routes
 app.use("/api/groups", groupRoutes(promisePool));
 
+// Use the post routes and pass the promisePool
+const postRoutes = require("./routes/postRoutes"); // Import post routes
+app.use("/api/posts", postRoutes(promisePool));
+
 app.get("/", (req, res) => {
   res.send("Hello, Flexfolio");
 });
