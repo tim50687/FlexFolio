@@ -1,6 +1,6 @@
-Flexfolio 
+# Flexfolio 
 
-Table of Contents
+# Table of Contents
 -	Description
 -	Installation
 -	Technical Specifications
@@ -9,7 +9,7 @@ Table of Contents
 -	Lessons Learned
 -	Future Work
   
-Description
+# Description
 
 Flexfolio is designed to be a platform and portfolio for having fun working out and exercising with friends while tracking a personalized fitness journey. The platform will foster fun and motivation around sharing fitness progress.
 The database will store information on each user and the workouts they create. Users are required to login with a unique email and password and are then assigned a unique ID number and registration date. 
