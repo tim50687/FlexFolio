@@ -29,10 +29,10 @@ const registerUser = (promisePool) => async (req, res) => {
     res.status(201).json({ message: "User registered successfully" });
   } catch (err) {
     if (err.code === "ER_DUP_ENTRY") {
-      res.status(409).json({ message: "User already exists" });
+      res.status(409).json({ success: false, message: "User already exists" });
     }
     console.log(err);
-    res.status(500).json({ message: "Internal server error" });
+    res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
 
@@ -52,19 +52,24 @@ const loginUser = (promisePool) => async (req, res) => {
 
     // Check if user exists
     if (!user) {
-      return res.status(401).json({ message: "Invalid email or password" });
+      return res.status(401).json({ message: "User not found" });
     }
 
     // Check if password is correct
     const passwordValid = await bcrypt.compare(password, user.user_password);
     if (!passwordValid) {
-      return res.status(401).json({ message: "Invalid email or password" });
+      return res.status(401).json({ message: "Wrong credential" });
     }
 
     // Generate JWT
     const token = jwt.sign(user, process.env.JWT_SECRET);
 
-    res.status(200).json({ accessToekn: token });
+    // hide the hash password
+    const { user_password: pass, ...userWithoutPassword } = user;
+    res
+      .cookie("token", token, { httpOnly: true })
+      .status(200)
+      .json(userWithoutPassword);
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Internal server error" });
