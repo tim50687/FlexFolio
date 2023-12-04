@@ -52,13 +52,17 @@ const loginUser = (promisePool) => async (req, res) => {
 
     // Check if user exists
     if (!user) {
-      return res.status(401).json({ message: "User not found" });
+      return res
+        .status(401)
+        .json({ success: false, message: "User not found" });
     }
 
     // Check if password is correct
     const passwordValid = await bcrypt.compare(password, user.user_password);
     if (!passwordValid) {
-      return res.status(401).json({ message: "Wrong credential" });
+      return res
+        .status(401)
+        .json({ success: false, message: "Wrong credential" });
     }
 
     // Generate JWT
@@ -72,7 +76,7 @@ const loginUser = (promisePool) => async (req, res) => {
       .json(userWithoutPassword);
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Internal server error" });
+    res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
 
