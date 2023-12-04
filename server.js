@@ -30,7 +30,7 @@ promisePool
 const app = express(); // create express app
 const PORT = 3000; // port where server is running
 
-app.use(express.json()); // Middleware for parsing JSON bodies
+app.use(express.json()); // Middleware for parsing JSON bodies, allow json as the input of the server
 
 // Use the user routes and pass the promisePool
 const userRoutes = require("./routes/userRoutes"); // Import user routes

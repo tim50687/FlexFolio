@@ -1,11 +1,18 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  signInStart,
+  signInSuccess,
+  signInFailure,
+} from "../redux/user/userSlice";
 
 export default function SignIn() {
   const [form, setForm] = React.useState({});
-  const [error, setError] = React.useState(null);
-  const [loading, setLoading] = React.useState(false);
+  const { loading, error } = useSelector((state) => state.user);
   const navigate = useNavigate();
+
+  const dispatch = useDispatch();
 
   const handleCHange = (e) => {
     setForm({ ...form, [e.target.id]: e.target.value });
@@ -13,7 +20,7 @@ export default function SignIn() {
   const handleSubmit = async (e) => {
     e.preventDefault(); // not to refresh the page
     try {
-      setLoading(true); // set the loading to true
+      dispatch(signInStart()); // set the loading to true
       // submit the form
       const res = await fetch("/api/users/login", {
         method: "POST",
@@ -26,20 +33,17 @@ export default function SignIn() {
 
       // handle backend errors
       if (data.success === false) {
-        setError(data.message);
-        setLoading(false);
+        dispatch(signInFailure(data.message));
         return;
       }
 
       // if successfully registered
-      setLoading(false); // set the loading to false
-      setError(null); // set the error to null
+      dispatch(signInSuccess(data));
 
       // redirect to sign in page
       navigate("/");
     } catch (error) {
-      setError(data.message);
-      setLoading(false);
+      dispatch(signInFailure(error.message));
     }
   };
 
