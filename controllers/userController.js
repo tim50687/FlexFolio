@@ -25,6 +25,16 @@ const registerUser = (promisePool) => async (req, res) => {
       name,
     ]);
 
+    // set up the default profile picture
+    const headshotUrl =
+      "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png";
+
+    // Update user photo
+    await promisePool.execute(
+      "UPDATE app_user SET user_photo_url = ? WHERE user_email = ?",
+      [headshotUrl, email]
+    );
+
     // Handle the response based on your stored procedure
     res.status(201).json({ message: "User registered successfully" });
   } catch (err) {
