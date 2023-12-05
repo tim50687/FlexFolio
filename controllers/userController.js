@@ -104,14 +104,16 @@ const deleteUser = (promisePool) => async (req, res) => {
 
     // Check if any rows were affected
     if (rows.affectedRows === 0) {
-      return res.status(404).json({ message: "User not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
     }
 
     // Handle the response based on your stored procedure
     res.status(200).json({ message: "User deleted successfully" });
   } catch (err) {
     console.log(err);
-    res.status(500).json({ message: "Internal server error" });
+    res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
 

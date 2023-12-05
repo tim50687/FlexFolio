@@ -1,10 +1,14 @@
 import React from "react";
 import { useSelector } from "react-redux";
 import { useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   updateUserStart,
   updateUserSuccess,
   updateUserFailure,
+  deleteUserFailure,
+  deleteUserStart,
+  deleteUserSuccess,
 } from "../redux/user/userSlice";
 import { useDispatch } from "react-redux";
 
@@ -16,6 +20,7 @@ export default function Profile() {
   // form that ready to be submitted to update the profile
   const [form, setForm] = React.useState({});
   const [updateSuccess, setUpdateSuccess] = React.useState(false);
+  const navigate = useNavigate();
 
   const dispatch = useDispatch();
   console.log(form);
@@ -77,6 +82,26 @@ export default function Profile() {
     }
   };
 
+  // handle delete user
+  const handleDeleteUser = async () => {
+    try {
+      dispatch(deleteUserStart());
+      const res = await fetch("/api/users/delete-account", {
+        method: "DELETE",
+      });
+      const data = await res.json();
+      if (data.success === false) {
+        dispatch(deleteUserFailure(data.message));
+        return;
+      }
+      dispatch(deleteUserSuccess(data));
+      // Redirect to sign-in page after successful deletion
+      navigate("/sign-in"); // Replace "/signin" with your sign-in route
+    } catch (error) {
+      dispatch(deleteUserFailure(error.message));
+    }
+  };
+
   return (
     <div className="p-3 max-w-lg mx-auto">
       <h1 className="text-3xl font-semibold text-center my-7">Profile</h1>
@@ -111,7 +136,12 @@ export default function Profile() {
 
         {/* delete account and sign out */}
         <div className="flex justify-between mt-5">
-          <span className="text-red-700 cursor-pointer">Delete Account</span>
+          <span
+            onClick={handleDeleteUser}
+            className="text-red-700 cursor-pointer"
+          >
+            Delete Account
+          </span>
           <span className="text-red-700 cursor-pointer">Sign Out</span>
         </div>
       </form>
