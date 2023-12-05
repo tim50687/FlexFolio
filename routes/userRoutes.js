@@ -22,11 +22,11 @@ module.exports = (promisePool) => {
     userController.deleteUser(promisePool)
   );
 
-  // Change user's name
+  // Update user profile
   router.put(
-    "/change-name",
+    "/update-profile",
     authenticateToken,
-    userController.changeName(promisePool)
+    userController.updateProfile(promisePool)
   );
 
   // Update user's profile picture

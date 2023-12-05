@@ -116,21 +116,46 @@ const deleteUser = (promisePool) => async (req, res) => {
 };
 
 // Change user's name
-const changeName = (promisePool) => async (req, res) => {
+const updateProfile = (promisePool) => async (req, res) => {
   try {
     const { user_email } = req.user;
-    const { name } = req.body;
+    const { username, user_photo_url } = req.body;
 
-    // update the user's name
-    const [rows] = await promisePool.execute(
-      "UPDATE app_user SET user_name = (?) WHERE user_email = (?)",
-      [name, user_email]
+    // Update database
+
+    // Update user photo if provided
+    if (user_photo_url && user_photo_url !== "") {
+      // Extract the key part from the URL
+      const imageKey = user_photo_url.split("/").pop();
+      const imageKeyPath = `api/users/images/${imageKey}`;
+
+      await promisePool.execute(
+        "UPDATE app_user SET user_photo_url = ? WHERE user_email = ?",
+        [imageKeyPath, user_email]
+      );
+    }
+
+    // Update username if provided
+    if (username && username !== "") {
+      await promisePool.execute(
+        "UPDATE app_user SET user_name = ? WHERE user_email = ?",
+        [username, user_email]
+      );
+    }
+
+    // Call the stored procedure
+    const [users] = await promisePool.execute(
+      "SELECT * FROM app_user WHERE user_email = (?)",
+      [user_email]
     );
+    const user = users[0];
 
-    res.status(200).json({ message: "Name changed successfully" });
+    // hide the hash password
+    const { user_password: pass, ...userWithoutPassword } = user;
+    res.status(200).json(userWithoutPassword);
   } catch (err) {
     console.log(err);
-    res.status(500).json({ message: "Internal server error" });
+    res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
 
@@ -146,13 +171,6 @@ const handleHeadshot = (promisePool) => async (req, res) => {
     const result = await upLoadFile(file); // need the Key return by s3 to get the image
     console.log(result);
     const headshotUrl = `/images/${result.Key}`;
-    // Update database
-
-    // Update user photo
-    await promisePool.execute(
-      "UPDATE app_user SET user_photo_url = ? WHERE user_email = ?",
-      [headshotUrl, user_email]
-    );
 
     // delete the file from uploads folder, since it is already uploaded to s3
     await unlinkFile(file.path);
@@ -204,7 +222,7 @@ module.exports = {
   registerUser,
   loginUser,
   deleteUser,
-  changeName,
+  updateProfile,
   handleHeadshot,
   logWorkout,
   getHeadshot,

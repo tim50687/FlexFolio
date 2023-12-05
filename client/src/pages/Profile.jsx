@@ -1,15 +1,24 @@
 import React from "react";
 import { useSelector } from "react-redux";
 import { useRef, useEffect } from "react";
+import {
+  updateUserStart,
+  updateUserSuccess,
+  updateUserFailure,
+} from "../redux/user/userSlice";
+import { useDispatch } from "react-redux";
 
 export default function Profile() {
   const fileRef = useRef(null);
-  const { currentUser } = useSelector((state) => state.user);
+  const { currentUser, loading, error } = useSelector((state) => state.user);
   // set the file state
   const [file, setFile] = React.useState(undefined);
-
+  // form that ready to be submitted to update the profile
   const [form, setForm] = React.useState({});
+  const [updateSuccess, setUpdateSuccess] = React.useState(false);
 
+  const dispatch = useDispatch();
+  console.log(form);
   useEffect(() => {
     if (file) {
       handleFileUpload(file);
@@ -39,10 +48,39 @@ export default function Profile() {
       console.log(error);
     }
   };
+
+  // handle the username change
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.id]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      dispatch(updateUserStart());
+      const res = await fetch("/api/users/update-profile", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(form),
+      });
+      const data = await res.json();
+      if (data.success === false) {
+        dispatch(updateUserFailure(data.message));
+        return;
+      }
+      dispatch(updateUserSuccess(data));
+      setUpdateSuccess(true);
+    } catch (error) {
+      dispatch(updateUserFailure(error.message));
+    }
+  };
+
   return (
     <div className="p-3 max-w-lg mx-auto">
       <h1 className="text-3xl font-semibold text-center my-7">Profile</h1>
-      <form className="flex flex-col gap-4">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <input
           onChange={(e) => setFile(e.target.files[0])}
           type="file"
@@ -59,11 +97,16 @@ export default function Profile() {
         <input
           type="text"
           placeholder="username"
+          defaultValue={currentUser.user_name}
           className="border p-3 rounded-lg"
           id="username"
+          onChange={handleChange}
         />
-        <button className="bg-slate-700 text-white rouded-lg p-3 uppercase hover:opacity-95 disabled:opacity-80">
-          update
+        <button
+          disabled={loading}
+          className="bg-slate-700 text-white rouded-lg p-3 uppercase hover:opacity-95 disabled:opacity-80"
+        >
+          {loading ? "Loading..." : "Update Profile"}
         </button>
 
         {/* delete account and sign out */}
@@ -72,6 +115,11 @@ export default function Profile() {
           <span className="text-red-700 cursor-pointer">Sign Out</span>
         </div>
       </form>
+      <p className="test-red-700"> {error ? error : ""} </p>
+      <p className="text-green-700 mt-5">
+        {" "}
+        {updateSuccess ? "User is updated successfully" : ""}
+      </p>
     </div>
   );
 }
