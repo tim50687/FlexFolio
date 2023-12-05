@@ -87,18 +87,19 @@ const joinGroup = (promisePool) => async (req, res) => {
 // Leave group
 const leaveGroup = (promisePool) => async (req, res) => {
   try {
-    const { groupName } = req.body;
+    const { group_name } = req.body;
 
     const { user_email } = req.user;
 
     // First, check if the user is part of the group
     const [checkResult] = await promisePool.execute(
       "SELECT 1 FROM user_group WHERE user_email = ? AND group_name = ?",
-      [user_email, groupName]
+      [user_email, group_name]
     );
 
     if (checkResult.length === 0) {
       return res.status(404).json({
+        success: false,
         message: "User not found in the group or group does not exist",
       });
     }
@@ -106,12 +107,12 @@ const leaveGroup = (promisePool) => async (req, res) => {
     // Proceed to delete the user from the group
     await promisePool.execute(
       "DELETE FROM user_group WHERE user_email = ? AND group_name = ?",
-      [user_email, groupName]
+      [user_email, group_name]
     );
     res.status(200).json({ message: "Successfully left the workout group" });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Internal server error" });
+    res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
 
@@ -165,7 +166,7 @@ const getBelongingGroups = (promisePool) => async (req, res) => {
     res.status(200).json({ groups });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Internal server error" });
+    res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
 

@@ -142,6 +142,32 @@ export default function Profile() {
     }
   };
 
+  // handle leaving group
+  const handleLeavingGroup = async (groupName) => {
+    try {
+      const res = await fetch("/api/groups/leave-group", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ group_name: groupName }),
+      });
+      const data = await res.json();
+      if (data.success === false) {
+        console.log(data.message);
+        return;
+      }
+      console.log(data.message);
+      // update the user groups
+      const updatedGroups = userGroups.filter(
+        (group) => group.group_name !== groupName
+      );
+      setUserGroups(updatedGroups);
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
   return (
     <div className="p-3 max-w-lg mx-auto">
       <h1 className="text-3xl font-semibold text-center my-7">Profile</h1>
@@ -230,8 +256,12 @@ export default function Profile() {
                 </p>
               </Link>
               <div className="flex flex-col items-center">
-                <button className="text-red-700 uppercase">Delete</button>
-                <button className="text-green-700 uppercase">Edit</button>
+                <button
+                  onClick={() => handleLeavingGroup(group.group_name)}
+                  className="text-red-700 uppercase"
+                >
+                  Leave
+                </button>
               </div>
             </div>
           );
