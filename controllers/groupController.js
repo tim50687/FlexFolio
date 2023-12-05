@@ -10,15 +10,37 @@ const createGroup = (promisePool) => async (req, res) => {
     const { groupName, description, passcode } = req.body;
     const { user_email } = req.user;
 
+    // set up the default profile picture
+    const groupUrl =
+      "https://cdn.pixabay.com/photo/2016/09/01/17/18/profile-1636642_1280.png";
+
     // Call the stored procedure, passing NULL for groupPhotoUrl
-    await promisePool.execute("CALL create_group(?, ?, ?, ?, NULL)", [
+    await promisePool.execute("CALL create_group(?, ?, ?, ?, ?)", [
       groupName,
       description,
       passcode,
       user_email,
+      groupUrl,
     ]);
 
-    res.status(201).json({ message: "Group created successfully" });
+    // Fetch the created group's details
+    const [groupRows] = await promisePool.execute(
+      "SELECT * FROM workout_group WHERE group_name = ?",
+      [groupName]
+    );
+
+    // Check if group details are available
+    if (groupRows.length === 0) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Group not found after creation" });
+    }
+
+    const createdGroup = groupRows[0];
+
+    res
+      .status(201)
+      .json({ message: "Group created successfully", group: createdGroup });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Internal server error" });
