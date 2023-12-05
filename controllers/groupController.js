@@ -156,7 +156,9 @@ const getBelongingGroups = (promisePool) => async (req, res) => {
     const { user_email } = req.user;
 
     const [groups] = await promisePool.execute(
-      "SELECT * FROM user_group WHERE user_email = ?",
+      "SELECT ug.user_email, ug.group_name, wg.group_photo_url FROM user_group ug " +
+        "JOIN workout_group wg ON ug.group_name = wg.group_name " +
+        "WHERE ug.user_email = ?",
       [user_email]
     );
 

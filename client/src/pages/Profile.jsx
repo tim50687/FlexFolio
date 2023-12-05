@@ -24,6 +24,13 @@ export default function Profile() {
   // form that ready to be submitted to update the profile
   const [form, setForm] = React.useState({});
   const [updateSuccess, setUpdateSuccess] = React.useState(false);
+
+  // show groups error
+  const [showGroupsError, setShowGroupsError] = React.useState(false);
+
+  // save groups that the user belongs to
+  const [userGroups, setUserGroups] = React.useState([]);
+
   const navigate = useNavigate();
 
   const dispatch = useDispatch();
@@ -119,6 +126,22 @@ export default function Profile() {
     }
   };
 
+  // handle show groups
+  const handleShowGroups = async () => {
+    try {
+      setShowGroupsError(false);
+      const res = await fetch("/api/groups/belonging-groups");
+      const data = await res.json();
+      if (data.success === false) {
+        setShowGroupsError(true);
+        return;
+      }
+      setUserGroups(data.groups);
+    } catch (error) {
+      setShowGroupsError(true);
+    }
+  };
+
   return (
     <div className="p-3 max-w-lg mx-auto">
       <h1 className="text-3xl font-semibold text-center my-7">Profile</h1>
@@ -176,6 +199,43 @@ export default function Profile() {
         {" "}
         {updateSuccess ? "User is updated successfully" : ""}
       </p>
+      <button onClick={handleShowGroups} className="text-green-700">
+        Show Groups
+      </button>
+      <p className="text-red-700 mt-5">
+        {showGroupsError ? "Failed to show groups" : ""}
+      </p>
+
+      {userGroups &&
+        userGroups.length > 0 &&
+        userGroups.map((group) => {
+          return (
+            <div
+              key={group.group_name}
+              className="flex gap-4 border rounded-lg p-3 justify-between items-center"
+            >
+              <Link to={`/groups/${group.group_name}`}>
+                <img
+                  src={group.group_photo_url}
+                  alt="Group Picture"
+                  className="h-16 w-16 object-contain "
+                />
+              </Link>
+              <Link
+                className="text-blue-700 flex-1 hover:underline font-semibold truncate"
+                to={`/groups/${group.group_name}`}
+              >
+                <p className="text-blue-700 hover:underline font-semibold truncate">
+                  {group.group_name}
+                </p>
+              </Link>
+              <div className="flex flex-col items-center">
+                <button className="text-red-700 uppercase">Delete</button>
+                <button className="text-green-700 uppercase">Edit</button>
+              </div>
+            </div>
+          );
+        })}
     </div>
   );
 }
