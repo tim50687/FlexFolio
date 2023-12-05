@@ -44,5 +44,12 @@ module.exports = (promisePool) => {
     userController.logWorkout(promisePool)
   );
 
+  // Get user's profile picture
+  router.get(
+    "/images/:key",
+    authenticateToken,
+    userController.getHeadshot(promisePool)
+  );
+
   return router;
 };

@@ -30,6 +30,9 @@ promisePool
 const app = express(); // create express app
 const PORT = 3000; // port where server is running
 
+const cookieParser = require("cookie-parser");
+app.use(cookieParser());
+
 app.use(express.json()); // Middleware for parsing JSON bodies, allow json as the input of the server
 
 // Use the user routes and pass the promisePool

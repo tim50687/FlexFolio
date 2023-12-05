@@ -165,6 +165,20 @@ const handleHeadshot = (promisePool) => async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
+// get back the user's profile picture
+const getHeadshot = (promisePool) => async (req, res) => {
+  try {
+    // get the image from s3
+    const key = req.params.key;
+    const readStream = getFileStream(key);
+    readStream.pipe(res);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 // Log the workout
 const logWorkout = (promisePool) => async (req, res) => {
   try {
@@ -193,4 +207,5 @@ module.exports = {
   changeName,
   handleHeadshot,
   logWorkout,
+  getHeadshot,
 };
