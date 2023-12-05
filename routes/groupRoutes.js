@@ -34,5 +34,20 @@ module.exports = (promisePool) => {
     upload.single("groupPicture"),
     groupController.handleGroupPicture(promisePool)
   );
+
+  // Get group picture
+  router.get(
+    "/images/:key",
+    authenticateToken,
+    groupController.getGroupPicture(promisePool)
+  );
+
+  // Get belonging groups
+  router.get(
+    "/belonging-groups",
+    authenticateToken,
+    groupController.getBelongingGroups(promisePool)
+  );
+
   return router;
 };
