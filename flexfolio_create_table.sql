@@ -8,6 +8,7 @@ CREATE TABLE app_user (
     user_email VARCHAR(64) PRIMARY KEY,
     user_name VARCHAR(64) NOT NULL,
     user_password VARCHAR(64) NOT NULL,
+    user_photo_url VARCHAR(255) DEFAULT NULL,
     date_registered DATETIME
 );
 
@@ -16,7 +17,7 @@ DROP TABLE IF EXISTS workout_group;
 CREATE TABLE workout_group (
     group_name VARCHAR(64) PRIMARY KEY,
     group_passcode INT UNIQUE,
-    group_photo_url VARCHAR(255),
+    group_photo_url VARCHAR(255) DEFAULT NULL,
     group_description TEXT,
     date_created DATETIME
 );
@@ -27,7 +28,7 @@ CREATE TABLE post (
     post_id INT PRIMARY KEY AUTO_INCREMENT,
     caption TINYTEXT,
     date_posted DATETIME,
-    images_url VARCHAR(255),
+    images_url VARCHAR(255) DEFAULT NULL,
     user_email VARCHAR(64),
     group_name VARCHAR(64),
     -- Declare foreign keys referencing app_users and workout_group 
@@ -57,17 +58,6 @@ CREATE TABLE user_comment (
         ON UPDATE CASCADE ON DELETE CASCADE
 );
 
-
-DROP TABLE IF EXISTS headshot;
-CREATE TABLE headshot (
-    image_url VARCHAR(255) PRIMARY KEY,
-    user_email VARCHAR(64),
-    date_uploaded DATETIME,
-    -- Declare foreign key referencing app_user 
-    FOREIGN KEY (user_email)
-        REFERENCES app_user (user_email)
-        ON UPDATE CASCADE ON DELETE CASCADE
-);
 
 -- Create a table handling information recorded for each workout created by users
 DROP TABLE IF EXISTS workouts;

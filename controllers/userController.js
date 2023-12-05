@@ -137,25 +137,12 @@ const handleHeadshot = (promisePool) => async (req, res) => {
     console.log(result);
     const headshotUrl = `/images/${result.Key}`;
     // Update database
-    // Check if the user already has a headshot
-    const [rows] = await promisePool.execute(
-      "SELECT * FROM headshot WHERE user_email = ?",
-      [user_email]
-    );
 
-    if (rows.length > 0) {
-      // Update existing headshot
-      await promisePool.execute(
-        "UPDATE headshot SET image_url = ?, date_uploaded = NOW() WHERE user_email = ?",
-        [headshotUrl, user_email]
-      );
-    } else {
-      // Insert new headshot
-      await promisePool.execute(
-        "INSERT INTO headshot (image_url, user_email, date_uploaded) VALUES (?, ?, NOW())",
-        [headshotUrl, user_email]
-      );
-    }
+    // Update user photo
+    await promisePool.execute(
+      "UPDATE app_user SET user_photo_url = ? WHERE user_email = ?",
+      [headshotUrl, user_email]
+    );
 
     // delete the file from uploads folder, since it is already uploaded to s3
     await unlinkFile(file.path);
