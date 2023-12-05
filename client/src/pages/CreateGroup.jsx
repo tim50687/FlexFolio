@@ -17,6 +17,9 @@ export default function CreateGroup() {
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  // check if the image upload is successful
+  const [imageUploadSuccess, setImageUploadSuccess] = useState(false);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -39,11 +42,14 @@ export default function CreateGroup() {
         // get the file
         const imgUrl = "/api/groups" + data.groupPhotoUrl;
         setForm({ ...form, group_photo_url: imgUrl });
+        setImageUploadSuccess(true);
       } else {
         console.error("Failed to upload images: ", data.message);
+        setImageUploadSuccess(false);
       }
     } catch (error) {
       console.log(error);
+      setImageUploadSuccess(false);
     }
   };
 
@@ -138,12 +144,17 @@ export default function CreateGroup() {
               accept="image/*"
             />
           </div>
+
           <button
             disabled={loading}
             className="p-3 bg-slate-700 text-white rounded-lg uppercase hover:opacity-80 disabled:opacity-80"
           >
             {loading ? "Loading..." : "Create Group"}
           </button>
+          {/* ... inputs and other elements ... */}
+          {imageUploadSuccess && (
+            <p className="text-green-500">Image uploaded successfully</p>
+          )}
           {error && <p className="text-red-500 mt-5">{error}</p>}
         </div>
       </form>
