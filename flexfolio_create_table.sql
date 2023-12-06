@@ -58,7 +58,7 @@ CREATE TABLE user_comment (
         ON UPDATE CASCADE ON DELETE CASCADE
 );
 
-
+   
 -- Create a table handling information recorded for each workout created by users
 DROP TABLE IF EXISTS workouts;
 CREATE TABLE workouts (
