@@ -1,7 +1,6 @@
 const { upLoadFile, getFileStream } = require("../s3"); // for user profile picture update
 // file system
 const fs = require("fs");
-const { join } = require("path");
 const utils = require("util");
 const unlinkFile = utils.promisify(fs.unlink);
 
