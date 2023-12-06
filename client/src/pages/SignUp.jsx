@@ -7,7 +7,7 @@ export default function SignUp() {
   const [loading, setLoading] = React.useState(false);
   const navigate = useNavigate();
 
-  const handleCHange = (e) => {
+  const handleChange = (e) => {
     setForm({ ...form, [e.target.id]: e.target.value });
   };
   const handleSubmit = async (e) => {
@@ -52,21 +52,21 @@ export default function SignUp() {
           placeholder="username"
           className="border p-3 rounded-lg"
           id="name"
-          onChange={handleCHange}
+          onChange={handleChange}
         />
         <input
           type="email"
           placeholder="email"
           className="border p-3 rounded-lg"
           id="email"
-          onChange={handleCHange}
+          onChange={handleChange}
         />
         <input
           type="password"
           placeholder="password"
           className="border p-3 rounded-lg"
           id="password"
-          onChange={handleCHange}
+          onChange={handleChange}
         />
         <button
           disabled={loading} // whenever it's loading you can not click on it
