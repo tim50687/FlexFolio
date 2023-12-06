@@ -154,6 +154,24 @@ const getPostPicture = (promisePool) => async (req, res) => {
   }
 };
 
+// Get all posts under a group
+const getPostsByGroup = (promisePool) => async (req, res) => {
+  try {
+    const { group_name } = req.params;
+
+    // Call the stored procedure
+    const [posts] = await promisePool.execute(
+      "SELECT * FROM post WHERE group_name = ? ORDER BY date_posted DESC",
+      [group_name]
+    );
+
+    res.status(200).json({ posts });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+
 module.exports = {
   createPost,
   deletePost,
@@ -161,4 +179,5 @@ module.exports = {
   likePost,
   getPostPicture,
   handlePostPicture,
+  getPostsByGroup,
 };

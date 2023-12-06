@@ -49,5 +49,12 @@ module.exports = (promisePool) => {
     postController.getPostPicture(promisePool)
   );
 
+  // Get all posts under a group
+  router.get(
+    "/:group_name",
+    authenticateToken,
+    postController.getPostsByGroup(promisePool)
+  );
+
   return router;
 };

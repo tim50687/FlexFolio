@@ -22,6 +22,8 @@ export default function Group() {
   const [error, setError] = useState(false);
   const { groupName } = useParams();
 
+  const getByteSize = (str) => new Blob([str]).size;
+
   useEffect(() => {
     if (files) {
       handleImageUpload(files);
@@ -29,33 +31,49 @@ export default function Group() {
   }, [files]);
   useEffect(() => {
     // fetch the group details
-    const fetchGroupDetails = async () => {
+    const fetchGroupData = async () => {
       try {
         // before loading the data, set loading to true
         setLoading(true);
         setError(false);
 
         // get the group detail
-        const response = await fetch(`/api/groups/${groupName}`);
-        if (!response.ok) {
+        const gorupResponse = await fetch(`/api/groups/${groupName}`);
+        if (!gorupResponse.ok) {
           throw new Error("Failed to fetch group details");
         }
-        const data = await response.json();
+        const groupData = await gorupResponse.json();
+        setGroupDetails(groupData.group);
 
-        setGroupDetails(data.group);
+        // get the posts
+        const postsResponse = await fetch(`/api/posts/${groupName}`);
+        const postData = await postsResponse.json();
+        if (!postsResponse.ok) {
+          throw new Error("Failed to fetch posts");
+        }
+        setPosts(postData.posts);
+
         setLoading(false);
       } catch (error) {
         setError(error.message);
         setLoading(false);
       }
     };
-    fetchGroupDetails();
+    fetchGroupData();
   }, [groupName]);
 
   // handle post creation
   const handlePostCreation = async (e) => {
     e.preventDefault();
     try {
+      // check caption size
+      const captionByteSize = getByteSize(newPostContent.caption);
+
+      if (captionByteSize > 255) {
+        setError("Caption exceeds the maximum length of 255 bytes.");
+        return;
+      }
+
       if (
         newPostContent.post_photo_url === "" ||
         newPostContent.caption === ""
@@ -91,8 +109,8 @@ export default function Group() {
       }
 
       // If successfully created a post
-      // Add the new post to the posts state (adjust based on your API response)
-      setPosts((prevPosts) => [...prevPosts, data.newPost]);
+      // Add the new post to the top of the posts state
+      setPosts((prevPosts) => [data.newPost, ...prevPosts]);
 
       // Clear the form
       setNewPostContent({ caption: "", post_photo_url: "" });
@@ -136,14 +154,6 @@ export default function Group() {
   const handleChange = (e) => {
     setNewPostContent({ ...newPostContent, [e.target.id]: e.target.value });
   };
-
-  if (loading) {
-    return <p className="text-center my-7 text-2xl">Loading...</p>;
-  }
-
-  if (error) {
-    return <p className="text-center my-7 text-2xl text-red-500">{error}</p>;
-  }
 
   return (
     <main className="p-4 max-w-4xl mx-auto">
@@ -192,6 +202,28 @@ export default function Group() {
 
       {error && <p className="text-red-500 mt-5">{error}</p>}
       {/* Posts */}
+      <section className="posts">
+        <h2 className="text-2xl font-semibold mb-3">Group Posts</h2>
+        <div className="space-y-4">
+          {posts.map((post) => (
+            <div
+              key={post.post_id}
+              className="post bg-white rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-shadow duration-300"
+            >
+              {post.images_url && (
+                <img
+                  src={post.images_url}
+                  alt="Post"
+                  className="w-full h-full object-cover"
+                />
+              )}
+              <div className="p-4">
+                <p className="text-gray-700 text-base">{post.caption}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
     </main>
   );
 }
