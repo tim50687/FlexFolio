@@ -87,7 +87,7 @@ export default function CreateGroup() {
       }
 
       // if successfully create, redirect to group page
-      navigate("/group/" + data.group.group_name);
+      navigate("/groups/" + data.group.group_name);
     } catch (error) {
       setError(error.message);
       setLoading(false);
