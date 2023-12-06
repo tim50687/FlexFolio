@@ -26,6 +26,9 @@ export default function Profile() {
   const [form, setForm] = React.useState({});
   const [updateSuccess, setUpdateSuccess] = React.useState(false);
 
+  // State for image loading
+  const [imageLoading, setImageLoading] = useState(false);
+
   // show groups error
   const [showGroupsError, setShowGroupsError] = React.useState(false);
 
@@ -69,6 +72,22 @@ export default function Profile() {
     e.preventDefault();
     try {
       console.log("Submitting workout data:", workout);
+
+      // Check user input
+      const setsValid = workout.sets > 0;
+      const repsValid = workout.reps > 0;
+      const weightValid = workout.weight > 0 && workout.weight < 99999;
+
+      if (
+        workout.exerciseName === "" ||
+        !setsValid ||
+        !repsValid ||
+        !weightValid
+      ) {
+        setLogWorkoutError(true);
+        return;
+      }
+
       // Check user input
       if (
         workout.sets === "" ||
@@ -130,6 +149,8 @@ export default function Profile() {
     formData.append("headshot", file);
 
     try {
+      // set the loading to true
+      setImageLoading(true);
       const response = await fetch("/api/users/update-profile-picture", {
         method: "POST",
         body: formData,
@@ -142,6 +163,7 @@ export default function Profile() {
         // get the file
         const imgUrl = "/api/users" + data.headshotUrl;
         setForm({ ...form, user_photo_url: imgUrl });
+        setImageLoading(false);
       } else {
         console.error("Failed to update profile picture: ", data.message);
       }
@@ -394,6 +416,17 @@ export default function Profile() {
                 {logWorkoutLoading ? "Loading..." : "Log Workout"}
               </button>
             </form>
+            {/* display error */}
+            <p className="text-red-700 mt-5">
+              {logWorkoutError
+                ? "Failed to log workout, sets and reps cannot be negative"
+                : ""}
+            </p>
+            <p className="text-red-700 mt-5">
+              {logWorkoutError
+                ? "weight cannot be negative or greater than 99999"
+                : ""}
+            </p>
             <p className="text-green-700 mt-5">
               {" "}
               {logWorkoutSuccess ? "Log workout successfully" : ""}
@@ -455,7 +488,7 @@ export default function Profile() {
               onChange={handleChange}
             />
             <button
-              disabled={loading}
+              disabled={loading || imageLoading}
               className="bg-slate-700 text-white rounded-lg p-3 uppercase hover:opacity-95 disabled:opacity-80"
             >
               {loading ? "Loading..." : "Update Profile"}
@@ -516,7 +549,9 @@ export default function Profile() {
             {showGroupsError ? "Failed to show groups" : ""}
           </p>
           <p className="text-red-700 mt-5">
-            {joinGroupsError ? "Failed to join groups" : ""}
+            {joinGroupsError
+              ? "Failed to join groups, already in the group or incorrect group code"
+              : ""}
           </p>
 
           {userGroups &&

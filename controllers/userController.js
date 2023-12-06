@@ -42,7 +42,8 @@ const registerUser = (promisePool) => async (req, res) => {
       res.status(409).json({ success: false, message: "User already exists" });
     }
     console.log(err);
-    res.status(500).json({ success: false, message: "Internal server error" });
+    // Email already exists
+    res.status(500).json({ success: false, message: "Email already exists" });
   }
 };
 

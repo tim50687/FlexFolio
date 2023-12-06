@@ -19,6 +19,8 @@ export default function CreateGroup() {
 
   // check if the image upload is successful
   const [imageUploadSuccess, setImageUploadSuccess] = useState(false);
+  // image loading
+  const [imageLoading, setImageLoading] = useState(false);
 
   const navigate = useNavigate();
 
@@ -32,6 +34,7 @@ export default function CreateGroup() {
     const formData = new FormData();
     formData.append("groupPicture", files);
     try {
+      setImageLoading(true);
       const response = await fetch("/api/groups/update-group-picture", {
         method: "POST",
         body: formData,
@@ -43,6 +46,7 @@ export default function CreateGroup() {
         const imgUrl = "/api/groups" + data.groupPhotoUrl;
         setForm({ ...form, group_photo_url: imgUrl });
         setImageUploadSuccess(true);
+        setImageLoading(false);
       } else {
         console.error("Failed to upload images: ", data.message);
         setImageUploadSuccess(false);
@@ -146,7 +150,7 @@ export default function CreateGroup() {
           </div>
 
           <button
-            disabled={loading}
+            disabled={imageLoading || loading}
             className="p-3 bg-slate-700 text-white rounded-lg uppercase hover:opacity-80 disabled:opacity-80"
           >
             {loading ? "Loading..." : "Create Group"}
