@@ -288,6 +288,54 @@ export default function Profile() {
     setGroupCode(e.target.value);
   };
 
+  // Function to fetch user's workout
+  const fetchUserWorkouts = async () => {
+    try {
+      const response = await fetch("/api/users/workout-logs", {
+        method: "GET",
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        console.log("User's workouts fetched successfully", data.workouts);
+        setUserWorkouts(data.workouts);
+      } else {
+        console.error("Failed to fetch user's workouts: ", data.message);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  // Function to handle workout delete
+  const handleDeleteWorkout = async (workoutId) => {
+    try {
+      const response = await fetch(`/api/users/delete-workout/${workoutId}`, {
+        method: "DELETE",
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        // Remove the deleted workout from the userWorkouts state
+        const updatedWorkouts = userWorkouts.filter(
+          (workout) => workout.workout_id !== workoutId
+        );
+        setUserWorkouts(updatedWorkouts);
+      } else {
+        console.error("Failed to delete workout: ", data.message);
+      }
+    } catch {
+      console.log(error);
+    }
+  };
+
+  // Fetch user workouts on component mount
+  useEffect(() => {
+    fetchUserWorkouts();
+  }, []);
+
   return (
     <div className="profile-page max-w-4xl mx-auto">
       <h1 className="text-3xl font-semibold text-center my-7">Profile</h1>
@@ -352,7 +400,34 @@ export default function Profile() {
             </p>
           </div>
           {/* Display Logged Workouts */}
-          {/* ... */}
+          <div className="logged-workouts mt-5">
+            <h2 className="text-xl font-semibold mb-3">Your Logged Workouts</h2>
+            <div className="space-y-3">
+              {userWorkouts.map((workout) => (
+                <div
+                  key={workout.workout_id} // to delete the workout in database and state later
+                  className="border p-3 rounded-lg flex justify-between items-center"
+                >
+                  <div>
+                    <p>
+                      <strong>Exercise:</strong> {workout.exercise_name}
+                    </p>
+                    <p>
+                      <strong>Sets:</strong> {workout.sets},{" "}
+                      <strong>Reps:</strong> {workout.reps},{" "}
+                      <strong>Weight:</strong> {workout.weight} lbs
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => handleDeleteWorkout(workout.workout_id)}
+                    className="bg-red-500 text-white p-2 rounded-lg uppercase hover:bg-red-600"
+                  >
+                    Delete
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
 
         {/* Right section */}

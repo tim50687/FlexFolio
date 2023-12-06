@@ -51,5 +51,19 @@ module.exports = (promisePool) => {
     userController.getHeadshot(promisePool)
   );
 
+  // Get user's workout logs
+  router.get(
+    "/workout-logs",
+    authenticateToken,
+    userController.getWorkouts(promisePool)
+  );
+
+  // Delete user's workout
+  router.delete(
+    "/delete-workout/:workout_id",
+    authenticateToken,
+    userController.deleteWorkout(promisePool)
+  );
+
   return router;
 };

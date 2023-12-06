@@ -219,15 +219,58 @@ const logWorkout = (promisePool) => async (req, res) => {
       "SELECT * FROM workouts WHERE user_email = ? AND exercise_name = ? ORDER BY date_recorded DESC LIMIT 1",
       [user_email, exerciseName]
     );
-    res
-      .status(201)
-      .json({
-        message: "Workout logged successfully",
-        workout: latestWorkout[0],
-      });
+    res.status(201).json({
+      message: "Workout logged successfully",
+      workout: latestWorkout[0],
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+// Get all the workouts
+const getWorkouts = (promisePool) => async (req, res) => {
+  try {
+    const { user_email } = req.user;
+
+    // Call the stored procedure
+    const [workouts] = await promisePool.execute(
+      "SELECT * FROM workouts WHERE user_email = ? ORDER BY date_recorded DESC",
+      [user_email]
+    );
+
+    res.status(200).json({ workouts });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+
+// Delete workouts by id
+const deleteWorkout = (promisePool) => async (req, res) => {
+  try {
+    const { user_email } = req.user;
+    const { workout_id } = req.params;
+
+    // Call the stored procedure
+    const [rows] = await promisePool.execute(
+      "DELETE FROM workouts WHERE user_email = ? AND workout_id = ?",
+      [user_email, workout_id]
+    );
+
+    // Check if any rows were affected
+    if (rows.affectedRows === 0) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Workout not found" });
+    }
+
+    // Handle the response based on your stored procedure
+    res.status(200).json({ message: "Workout deleted successfully" });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
 
@@ -239,4 +282,6 @@ module.exports = {
   handleHeadshot,
   logWorkout,
   getHeadshot,
+  getWorkouts,
+  deleteWorkout,
 };
