@@ -125,6 +125,7 @@ export default function Group() {
 
   // handle image upload
   const handleImageUpload = async (files) => {
+    setLoading(true);
     const formData = new FormData();
     formData.append("postPicture", files);
     try {
@@ -139,7 +140,7 @@ export default function Group() {
         const imgUrl = "/api/posts" + data.postPhotoUrl;
         setNewPostContent({ ...newPostContent, post_photo_url: imgUrl });
         setImageUploadSuccess(true);
-        alert("Image uploaded successfully");
+        setLoading(false);
       } else {
         console.error("Failed to upload images: ", data.message);
         setImageUploadSuccess(false);
@@ -174,6 +175,7 @@ export default function Group() {
         <h2 className="text-2xl font-semibold mb-3">Create a Post</h2>
         <textarea
           onChange={handleChange}
+          value={newPostContent.caption}
           className="w-full p-3 border border-gray-300 rounded-lg mb-3"
           placeholder="What's on your mind?"
           rows="4"
@@ -193,7 +195,8 @@ export default function Group() {
         />
         <button
           onClick={handlePostCreation}
-          className="mt-3 bg-blue-600 text-white p-3 rounded-lg w-full uppercase hover:bg-blue-700"
+          disabled={loading}
+          className="mt-3 bg-blue-600 text-white p-3 rounded-lg w-full uppercase hover:bg-blue-700 disabled:opacity-80"
         >
           Post
         </button>

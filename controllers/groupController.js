@@ -1,6 +1,7 @@
 const { upLoadFile, getFileStream } = require("../s3"); // for user profile picture update
 // file system
 const fs = require("fs");
+const { join } = require("path");
 const utils = require("util");
 const unlinkFile = utils.promisify(fs.unlink);
 
@@ -58,17 +59,41 @@ const createGroup = (promisePool) => async (req, res) => {
 // User join group
 const joinGroup = (promisePool) => async (req, res) => {
   try {
-    const { groupName, passcode } = req.body;
+    const { group_code } = req.body;
 
     const { user_email } = req.user;
 
+    // First, check if a group with the given group_code exists
+    const [group] = await promisePool.execute(
+      "SELECT group_name FROM workout_group WHERE group_passcode = ?",
+      [group_code]
+    );
+
+    // If no group is found, return an error
+    if (group.length === 0) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Group not found" });
+    }
+
+    // If group is found, proceed to join the user to the group
     await promisePool.execute("CALL join_group(?, ?, ?)", [
-      groupName,
+      group[0].group_name,
       user_email,
-      passcode,
+      group_code,
     ]);
 
-    res.status(201).json({ message: "Group joined successfully" });
+    // Fetch the created group's details
+    const [groupRows] = await promisePool.execute(
+      "SELECT * FROM workout_group WHERE group_name = ?",
+      [group[0].group_name]
+    );
+
+    const joinedGroup = groupRows[0];
+    console.log(joinedGroup);
+    res
+      .status(201)
+      .json({ message: "Group joined successfully", group: joinedGroup });
   } catch (err) {
     console.error(err);
 
@@ -77,10 +102,12 @@ const joinGroup = (promisePool) => async (req, res) => {
       err.code === "ER_SIGNAL_EXCEPTION" &&
       err.message.includes("Invalid passcode")
     ) {
-      return res.status(400).json({ message: "Invalid passcode" });
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid passcode" });
     }
 
-    res.status(500).json({ message: "Internal server error" });
+    res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
 

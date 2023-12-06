@@ -36,7 +36,7 @@ const createPost = (promisePool) => async (req, res) => {
       .json({ message: "Post created successfully", newPost: newPost[0] });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Internal server error" });
+    res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
 

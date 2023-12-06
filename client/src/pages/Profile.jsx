@@ -28,8 +28,14 @@ export default function Profile() {
   // show groups error
   const [showGroupsError, setShowGroupsError] = React.useState(false);
 
+  // join groups error
+  const [joinGroupsError, setJoinGroupsError] = React.useState(false);
+
   // save groups that the user belongs to
   const [userGroups, setUserGroups] = React.useState([]);
+
+  // State for group code as number
+  const [groupCode, setGroupCode] = React.useState(0);
 
   const navigate = useNavigate();
 
@@ -120,7 +126,7 @@ export default function Profile() {
 
       dispatch(signOutUserSuccess());
       // Redirect to sign-in page after successful sign out
-      navigate("/sign-in"); // Replace "/signin" with your sign-in route
+      navigate("/sign-in");
     } catch (error) {
       dispatch(signOutUserFailure(error.message));
     }
@@ -168,6 +174,41 @@ export default function Profile() {
     }
   };
 
+  // handle join group
+  const handleJoinGroup = async (e) => {
+    e.preventDefault();
+
+    try {
+      setJoinGroupsError(false);
+      // Send a POST request to join a group using the group code
+      const response = await fetch(`/api/groups/join-group`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ group_code: groupCode }),
+      });
+
+      const data = await response.json();
+
+      if (data.success === false) {
+        setJoinGroupsError(true);
+        return;
+      }
+
+      // Redirect to the group page (assuming the response contains the group name or ID)
+      navigate("/groups/" + data.group.group_name);
+    } catch (error) {
+      console.log(error.message);
+      setJoinGroupsError(true);
+    }
+  };
+
+  // handle group code change
+  const handleGroupCodeChange = (e) => {
+    setGroupCode(e.target.value);
+  };
+
   return (
     <div className="p-3 max-w-lg mx-auto">
       <h1 className="text-3xl font-semibold text-center my-7">Profile</h1>
@@ -199,6 +240,7 @@ export default function Profile() {
         >
           {loading ? "Loading..." : "Update Profile"}
         </button>
+
         {/* create group */}
         <Link
           className="bg-green-700 text-white p-3 rounded-lg uppercase text-center hover:opacity-95"
@@ -206,6 +248,25 @@ export default function Profile() {
         >
           Create group
         </Link>
+
+        {/* Divider */}
+        <div className="text-center text-gray-600">or</div>
+
+        {/* Join Group Input and Button */}
+        <div className="flex items-center justify-between">
+          <input
+            type="number"
+            onChange={handleGroupCodeChange}
+            placeholder="Enter Group Code"
+            className="border p-2 rounded-lg flex-grow mr-2"
+          />
+          <button
+            onClick={handleJoinGroup}
+            className="bg-blue-500 text-white p-3 rounded-lg uppercase hover:bg-blue-600 flex-grow"
+          >
+            Join Group
+          </button>
+        </div>
 
         {/* delete account and sign out */}
         <div className="flex justify-between mt-5">
@@ -230,6 +291,9 @@ export default function Profile() {
       </button>
       <p className="text-red-700 mt-5">
         {showGroupsError ? "Failed to show groups" : ""}
+      </p>
+      <p className="text-red-700 mt-5">
+        {joinGroupsError ? "Failed to join groups" : ""}
       </p>
 
       {userGroups &&
