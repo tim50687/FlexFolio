@@ -24,3 +24,16 @@
   display: block; /* Makes the image a block-level element */
   margin: 0 auto; /* Centers the image */
 }
+
+.profile-page {
+  padding: 20px;
+}
+
+.profile-page .flex {
+  display: flex;
+  gap: 20px; /* Adjust gap between columns */
+}
+
+.flex-1 {
+  flex: 1;
+}

@@ -213,7 +213,18 @@ const logWorkout = (promisePool) => async (req, res) => {
       reps,
       weight, // New weight parameter
     ]);
-    res.status(201).json({ message: "Workout logged successfully" });
+
+    // get the workout, sent back to client
+    const [latestWorkout] = await promisePool.execute(
+      "SELECT * FROM workouts WHERE user_email = ? AND exercise_name = ? ORDER BY date_recorded DESC LIMIT 1",
+      [user_email, exerciseName]
+    );
+    res
+      .status(201)
+      .json({
+        message: "Workout logged successfully",
+        workout: latestWorkout[0],
+      });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Internal server error" });
