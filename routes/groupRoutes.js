@@ -49,5 +49,12 @@ module.exports = (promisePool) => {
     groupController.getBelongingGroups(promisePool)
   );
 
+  // Get group details
+  router.get(
+    "/:group_name",
+    authenticateToken,
+    groupController.getGroupDetails(promisePool)
+  );
+
   return router;
 };

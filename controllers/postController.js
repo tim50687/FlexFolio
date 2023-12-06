@@ -8,38 +8,32 @@ const unlinkFile = utils.promisify(fs.unlink);
 // User has to create a post with the picture
 const createPost = (promisePool) => async (req, res) => {
   try {
-    const { group_name, caption } = req.body;
+    const { group_name, caption, post_photo_url } = req.body;
     const { user_email } = req.user;
 
-    // First, check if the group exists
-    const [groupExistence] = await promisePool.execute(
-      "SELECT 1 FROM workout_group WHERE group_name = ?",
-      [group_name]
-    );
-
-    if (groupExistence.length === 0) {
-      return res.status(404).json({ message: "Group does not exist" });
+    if (!caption || !post_photo_url || !group_name) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Missing required fields" });
     }
-
-    // return by multer middleware
-    const file = req.file; // filename and path will be used by s3
-
-    // upload the file to s3
-    const result = await upLoadFile(file); // need the Key return by s3 to get the image
-    const post_image_url = `/images/${result.Key}`;
 
     // Call the stored procedure
     await promisePool.execute("CALL create_post(?, ?, ?, ?)", [
       user_email,
       group_name,
       caption,
-      post_image_url,
+      post_photo_url,
     ]);
 
-    // delete the file from uploads folder, since it is already uploaded to s3
-    await unlinkFile(file.path);
+    // Retrieve the newly created post by the latest date
+    const [newPost] = await promisePool.execute(
+      "SELECT * FROM post WHERE group_name = ? ORDER BY date_posted DESC LIMIT 1",
+      [group_name]
+    );
 
-    res.status(201).json({ message: "Post created successfully" });
+    res
+      .status(201)
+      .json({ message: "Post created successfully", newPost: newPost[0] });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Internal server error" });
@@ -125,4 +119,46 @@ const likePost = (promisePool) => async (req, res) => {
   }
 };
 
-module.exports = { createPost, deletePost, commentOnPost, likePost };
+// Set the post picture
+const handlePostPicture = (promisePool) => async (req, res) => {
+  try {
+    // return by multer middleware
+    const file = req.file; // filename and path will be used by s3
+
+    // upload the file to s3
+    const result = await upLoadFile(file); // need the Key return by s3 to get the image
+    const postPhotoUrl = `/images/${result.Key}`;
+
+    // delete the file from uploads folder, since it is already uploaded to s3
+    await unlinkFile(file.path);
+
+    // return the url to the client
+    res
+      .status(200)
+      .json({ message: "Post picture updated successfully", postPhotoUrl });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+// Get post picture
+const getPostPicture = (promisePool) => async (req, res) => {
+  try {
+    const { key } = req.params;
+    const readStream = getFileStream(key);
+    readStream.pipe(res);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+module.exports = {
+  createPost,
+  deletePost,
+  commentOnPost,
+  likePost,
+  getPostPicture,
+  handlePostPicture,
+};

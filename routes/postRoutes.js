@@ -34,5 +34,20 @@ module.exports = (promisePool) => {
   // Like a post
   router.post("/like", authenticateToken, postController.likePost(promisePool));
 
+  // Set the post picture
+  router.post(
+    "/update-post-picture",
+    authenticateToken,
+    upload.single("postPicture"),
+    postController.handlePostPicture(promisePool)
+  );
+
+  // Get post picture
+  router.get(
+    "/images/:key",
+    authenticateToken,
+    postController.getPostPicture(promisePool)
+  );
+
   return router;
 };

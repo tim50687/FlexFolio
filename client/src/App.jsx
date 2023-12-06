@@ -8,6 +8,7 @@ import Profile from "./pages/Profile";
 import Header from "./components/Header";
 import PrivateRoute from "./components/PrivateRoute";
 import CreateGroup from "./pages/CreateGroup";
+import Group from "./pages/Group";
 
 export default function App() {
   return (
@@ -20,7 +21,8 @@ export default function App() {
         <Route path="/sign-up" element={<SignUp />} />
         <Route element={<PrivateRoute />}>
           <Route path="/profile" element={<Profile />} />
-          <Route path="create-group" element={<CreateGroup />}></Route>
+          <Route path="/create-group" element={<CreateGroup />}></Route>
+          <Route path="/groups/:groupName" element={<Group />}></Route>
         </Route>
       </Routes>
     </BrowserRouter>

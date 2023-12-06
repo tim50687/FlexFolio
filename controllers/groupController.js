@@ -170,6 +170,36 @@ const getBelongingGroups = (promisePool) => async (req, res) => {
   }
 };
 
+// Get the group details
+
+const getGroupDetails = (promisePool) => async (req, res) => {
+  const { group_name } = req.params;
+
+  try {
+    // fetch the group details from the database
+
+    const [groupRows] = await promisePool.execute(
+      "SELECT * FROM workout_group WHERE group_name = ?",
+      [group_name]
+    );
+
+    // Check if group details are available
+
+    if (groupRows.length === 0) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Group not found" });
+    }
+
+    const group = groupRows[0];
+
+    res.status(200).json({ group: group });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+
 module.exports = {
   createGroup,
   joinGroup,
@@ -177,4 +207,5 @@ module.exports = {
   handleGroupPicture,
   getGroupPicture,
   getBelongingGroups,
+  getGroupDetails,
 };
