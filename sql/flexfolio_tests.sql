@@ -67,20 +67,36 @@ CALL delete_post(
     
 -- test ability to like a post 
 CALL like_post(
-	11, 
-    'test_user@example.com');
+	1, 
+    'bob.miller@example.com');
     
 SELECT * FROM user_likes_post
-	where user_email = 'test_user@example.com';
+	where user_email = 'bob.miller@example.com';
+    
+DELETE FROM user_likes_post WHERE user_email = 'bob.miller@example.com' AND post_id = 1;
+    
+
     
 -- test commenting on a post 
 CALL comment_on_post(
-	11, 
-    'test_user@example.com',
+	1, 
+    'bob.miller@example.com',
     'Ofc he likes to parry :)');
     
 SELECT * FROM user_comment
-	where post_id = 11;
+	where post_id = 1;
+    
+DELETE FROM user_comment WHERE post_id = 1 AND user_email = 'bob.miller@example.com';
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
 -- test workout session log 
 CALL log_workout(
