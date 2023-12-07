@@ -57,14 +57,5 @@ CREATE FUNCTION avg_sets_by_workout
 	end //
 delimiter ; 
 
--- trigger that automatically updates the date when a comment is made 
-delimiter // 
-CREATE TRIGGER update_comment_date
-	BEFORE INSERT ON user_comment
-	FOR EACH ROW
-    BEGIN
-		SET NEW.date_commented = NOW();
-	END //
-DELIMITER ; 
         
 		
