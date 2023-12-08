@@ -1,10 +1,17 @@
 # Flexfolio - Social Fitness Platform
 
-# Description
+## Description
 
-Flexfolio is designed to be a platform and portfolio for having fun working out and exercising with friends while tracking a personalized fitness journey. The platform will foster fun and motivation around sharing fitness progress. The database will store information on each user and the workouts they create. Users are required to login with a unique email and password and are then assigned a unique ID number and registration date. To enhance their profile, users may upload a headshot, recorded with a unique URL and upload date. 
+Flexfolio is a social fitness platform that allows users to track and share their fitness journey in a fun and interactive way. Designed to foster motivation and community, users can join interest-based groups, create and share workout posts, and engage with others through likes and comments.
 
-Each user is then given the option to create and/or join any number of interest-based groups focused on roommates, family, or workout buddies. Each group is given a unique ID, group photo and is defined by name, description, date created and is also given a unique group passcode used to invite users to join, facilitating community-building around shared interests. After each user joins a group, they can make many posts about fitness achievements with images and captions. Each post is open to many likes and comments from other users, fostering interaction and motivation. Each comment is associated with the user who authored it and is related to the post. Each like given to a post is attributed to the user who admired the post and the post itself. Users can only make posts within their joined groups, making them visible to all members of those groups. To promote camaraderie and healthy competition, the platform allows users to log their workouts with detailed exercise information, including sets, repetitions, and the workout's date.
+## Features
+
+- **User Authentication:** Secure login with email and password.
+- **Profile Customization:** Users can upload headshots and personalize their profiles.
+- **Group Interaction:** Create or join multiple groups based on interests.
+- **Fitness Posting:** Share workout achievements with images and captions.
+- **Community Engagement:** Like and comment on posts within groups.
+- **Workout Logging:** Track workouts with details like sets, reps, and dates.
 
 ## Prerequisites
 To run this project, you will need to have the following installed:
@@ -36,7 +43,7 @@ To run this project, you will need to have the following installed:
 
    - Navigate to the frontend directory:
      ```
-     cd client
+     cd ../client
      ```
    - Install frontend dependencies:
      ```
@@ -53,16 +60,65 @@ To run this project, you will need to have the following installed:
 
 5. **Environment Variables:**
 
-   - Set up your `.env` file in the backend directory with the necessary environment variables, such as database connection details, API keys, etc.
+For the application to run correctly, it needs certain environment variables. These variables are used for database connections, JWT (JSON Web Token) authentication, and AWS (Amazon Web Services) bucket configuration. You'll need to set these variables in a `.env` file in `api/`.
+
+Here, I have already provided a sample `.env` file. I shouldn't, but I'll do it for the sake of this example. You should **never** commit your `.env` file to version control. It should always be added to `.gitignore` to prevent it from being pushed to the remote repository.
+
+- **Go to `.env` file:** 
+    Navigate to the `.env` file in `api/`.
+
+- **Database Configuration:**
+   Set the database connection variables. You should replace the placeholder values with your actual database configuration.
+
+   ```plaintext
+   DB_HOST='YourDatabaseHost'
+   DB_USERNAME='YourDatabaseUsername'
+   DB_PASSWORD='YourDatabasePassword'
+   DB_DATABASE='YourDatabaseName'
+   ```
+
+   For example:
+   ```plaintext
+   DB_HOST='localhost'
+   DB_USERNAME='root'
+   DB_PASSWORD='yourpassword'
+   DB_DATABASE='flexfolio'
+   ```
+
+- **JWT Secret Key:**
+   Set a secret key for JWT. This can be any long, random string.
+
+   ```plaintext
+   JWT_SECRET='YourRandomLongString'
+   ```
+
+- **AWS Bucket Configuration:**
+   Set the AWS bucket details. Replace the placeholders with your AWS S3 bucket information.
+
+   ```plaintext
+   AWS_BUCKET_NAME='YourAwsBucketName'
+   AWS_BUCKET_REGION='YourAwsBucketRegion'
+   AWS_ACCESS_KEY='YourAwsAccessKey'
+   AWS_SECRET_KEY='YourAwsSecretKey'
+   ```
+
+   Ensure that you keep these keys confidential to prevent unauthorized access.
+
+- **Save the `.env` file:** 
+   After entering all the necessary details, save the `.env` file.
+
+
 
 6. **Running the Application:**
 
    - Start the backend server:
      ```
+     cd api
      npm run devStart
      ```
    - In a new terminal, start the frontend application:
      ```
+     cd ../client
      npm run dev
      ```
 
@@ -72,14 +128,17 @@ To run this project, you will need to have the following installed:
    - The backend API will typically run on `http://localhost:3000`.
 
 ## Libraries and Frameworks Used
-List all the major libraries and frameworks used in your project, including their versions. For example:
-- React.js
-- Express
-- Sequelize
-- MySQL2
-- bcrypt
+- **Frontend:** React.js, Redux Toolkit, React Router
+- **Backend:** Node.js, Express, Sequelize, MySQL2
+- **Security:** bcrypt, JSON Web Token
+- **Cloud Storage:** AWS S3
+- **Styling:** Tailwind CSS
 
+## Demo
+
+![Flexfolio Demo](media/demo.gif)
 
 ## License
-This project uses the following license: [MIT License] 
+
+Flexfolio is released under the [MIT License](LICENSE).
 
