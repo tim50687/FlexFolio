@@ -1,5 +1,5 @@
-DROP DATABASE IF EXISTS Flexfolio;
-CREATE DATABASE FlexFolio;
+DROP DATABASE IF EXISTS flexfolio;
+CREATE DATABASE flexFolio;
 USE FlexFolio;
 
 -- Create a table storing the user's information
