@@ -1,6 +1,6 @@
 DROP DATABASE IF EXISTS flexfolio;
-CREATE DATABASE flexFolio;
-USE FlexFolio;
+CREATE DATABASE flexfolio;
+USE flexfolio;
 
 -- Create a table storing the user's information
 DROP TABLE IF EXISTS app_user;
