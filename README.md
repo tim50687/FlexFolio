@@ -4,6 +4,10 @@
 
 Flexfolio is a social fitness platform that allows users to track and share their fitness journey in a fun and interactive way. Designed to foster motivation and community, users can join interest-based groups, create and share workout posts, and engage with others through likes and comments.
 
+## Demo
+
+![Flexfolio Demo](media/demo.gif)
+
 ## Features
 
 - **User Authentication:** Secure login with email and password.
@@ -133,10 +137,6 @@ Here, I have already provided a sample `.env` file. I shouldn't, but I'll do it 
 - **Security:** bcrypt, JSON Web Token
 - **Cloud Storage:** AWS S3
 - **Styling:** Tailwind CSS
-
-## Demo
-
-![Flexfolio Demo](media/demo.gif)
 
 ## License
 
