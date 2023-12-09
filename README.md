@@ -6,7 +6,7 @@ Flexfolio is a social fitness platform that allows users to track and share thei
 
 ## Demo
 
-![Flexfolio Demo](media/demo.gif)
+![Flexfolio Demo](media/flexfolio_demo.gif)
 
 ## Features
 
